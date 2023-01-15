@@ -1,6 +1,6 @@
 node{
 	stage('Git Checkout'){
-		git branch: 'main', credentialsId: 'git_credentials', url: 'https://github.com/amit873/Jenkins-Docker-Kubernetes-Project4.git'
+		git branch: 'main', credentialsId: 'git_credentials', url: 'https://github.com/fabienboy661/fabien-repository.git'
 	}
 
 	stage('Maven Clean Package') {
@@ -10,28 +10,28 @@ node{
 	}
 	
 	stage('Build Docker Image'){
-		sh "docker build -t ameintu/docker-jenkins:${env.BUILD_ID} ."
+		sh "docker build -t fabien123/docker-jenkins:${env.BUILD_ID} ."
 	}
 
 	stage('Push Image to Docker Hub'){
-		withCredentials([string(credentialsId: 'docker_hub', variable: 'docker_hub')]) {
-			sh "docker login -u ameintu -p ${docker_hub}"
+		withCredentials([string(credentialsId: 'docker-hub', variable: 'docker-hub')]) {
+			sh "docker login -u fabien123 -p ${docker-hub}"
 		}
-		sh "docker push ameintu/docker-jenkins:${env.BUILD_ID}"
+		sh "docker push fabien123/docker-jenkins:${env.BUILD_ID}"
 	}
 	
 	stage('Push Image in ECR'){
-		ECRURL = 'https://233402516001.dkr.ecr.us-east-1.amazonaws.com'
+		ECRURL = 'https://557127693745.dkr.ecr.us-east-1.amazonaws.com'
 		ECRRED = 'ecr:us-east-1:awscredentials'
 		docker.withRegistry("${ECRURL}","${ECRRED}"){
-			docker.image("ameintu/docker-jenkins:${env.BUILD_ID}").push()
+			docker.image("fabien/docker-jenkins:${env.BUILD_ID}").push()
 		}
 	}
 	
 	stage('Run Container on AWS Server'){
-		def dockerRun = "docker run -d -p 8080:8080 --name myapp-${env.BUILD_ID} ameintu/docker-jenkins:${env.BUILD_ID}"
+		def dockerRun = "docker run -d -p 8080:8080 --name myapp-${env.BUILD_ID} fabien/docker-jenkins:${env.BUILD_ID}"
 		sshagent(['aws_instance']) {
-		    sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.31.83 ${dockerRun}"
+		    sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.81.54 ${dockerRun}"
 		}
 	}
 }
