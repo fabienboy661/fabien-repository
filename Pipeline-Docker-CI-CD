@@ -21,7 +21,7 @@ node{
 	}
 
 	stage('Run Container on AWS Server'){
-		def dockerRun = "docker run -d -p 8080:8080 --name myapp-${env.BUILD_ID} fabien/docker-jenkins:${env.BUILD_ID}"
+		def dockerRun = "docker run -d -p 8080:8080 --name myapp-${env.BUILD_ID} fabien123/docker-jenkins:${env.BUILD_ID}"
 		sshagent(['aws_instance']) {
 			sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.81.54 ${dockerRun}"
 		}
